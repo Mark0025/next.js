@@ -7,7 +7,9 @@ import { getRedboxTotalErrorCount, retry } from 'next-test-utils'
 
 // https://github.com/facebook/react/blob/main/packages/react-dom/src/__tests__/ReactDOMHydrationDiff-test.js used as a reference
 
-const enableOwnerStacks = process.env.__NEXT_EXPERIMENTAL_PPR === 'true'
+// TODO(new-dev-overlay): Remove this once old dev overlay fork is removed
+const isNewDevOverlay =
+  process.env.__NEXT_EXPERIMENTAL_NEW_DEV_OVERLAY === 'true'
 
 describe('Error overlay for hydration errors in App router', () => {
   const { next, isTurbopack } = nextTestSetup({
@@ -99,18 +101,18 @@ describe('Error overlay for hydration errors in App router', () => {
 
     if (isTurbopack) {
       expect(pseudoHtml).toMatchInlineSnapshot(`
-        "...
-          ...
-        +  client
-        -  server"
+       "...
+         ...
+       client
+       server"
       `)
     } else {
       expect(pseudoHtml).toMatchInlineSnapshot(`
-        "...
-          <div className="parent">
-            <main className="child">
-        +      client
-        -      server"
+       "...
+         <div className="parent">
+           <main className="child">
+           client
+           server"
       `)
     }
 
@@ -161,16 +163,16 @@ describe('Error overlay for hydration errors in App router', () => {
     const pseudoHtml = await session.getRedboxComponentStack()
     if (isTurbopack) {
       expect(pseudoHtml).toMatchInlineSnapshot(`
-        "...
-          ...
-        +  <main className="only">"
+       "...
+         ...
+       <main className="only">"
       `)
     } else {
       expect(pseudoHtml).toMatchInlineSnapshot(`
-        "...
-          <div className="parent">
-            ...
-        +    <main className="only">"
+       "...
+         <div className="parent">
+           ...
+         <main className="only">"
       `)
     }
 
@@ -208,7 +210,7 @@ describe('Error overlay for hydration errors in App router', () => {
     expect(await getRedboxTotalErrorCount(browser)).toBe(1)
 
     const pseudoHtml = await session.getRedboxComponentStack()
-    expect(pseudoHtml).toMatchInlineSnapshot(`"- className="server-html""`)
+    expect(pseudoHtml).toMatchInlineSnapshot(`"className="server-html""`)
 
     expect(await session.getRedboxDescription()).toMatchInlineSnapshot(
       `"Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:"`
@@ -248,15 +250,15 @@ describe('Error overlay for hydration errors in App router', () => {
         ...
           ...
             ...
-        +  second
-        -  <footer className="3">
+           second
+           <footer className="3">
       `)
     } else {
       expect(pseudoHtml).toEqual(outdent`
         ...
           <div className="parent">
-        +    second
-        -    <footer className="3">
+             second
+             <footer className="3">
       `)
     }
 
@@ -295,13 +297,13 @@ describe('Error overlay for hydration errors in App router', () => {
       expect(pseudoHtml).toEqual(outdent`
         ...
           ...
-        -  <main className="only">
+           <main className="only">
       `)
     } else {
       expect(pseudoHtml).toEqual(outdent`
         ...
           <div className="parent">
-        -    <main className="only">
+             <main className="only">
       `)
     }
 
@@ -339,15 +341,15 @@ describe('Error overlay for hydration errors in App router', () => {
 
     if (isTurbopack) {
       expect(pseudoHtml).toMatchInlineSnapshot(`
-        "...
-          ...
-        -  only"
+       "...
+         ...
+       only"
       `)
     } else {
       expect(pseudoHtml).toMatchInlineSnapshot(`
-        "...
-          <div className="parent">
-        -    only"
+       "...
+         <div className="parent">
+         only"
       `)
     }
   })
@@ -390,15 +392,15 @@ describe('Error overlay for hydration errors in App router', () => {
       expect(pseudoHtml).toEqual(outdent`
         ...
           ...
-        +  <table>
-        -  test
+           <table>
+           test
       `)
     } else {
       expect(pseudoHtml).toEqual(outdent`
         ...
           ...
-        +  <table>
-        -  test
+           <table>
+           test
     }`)
     }
   })
@@ -491,8 +493,8 @@ describe('Error overlay for hydration errors in App router', () => {
       ...
         ...
           ...
-      +  <main className="second">
-      -  <footer className="3">
+         <main className="second">
+         <footer className="3">
     `)
     } else {
       expect(pseudoHtml).toEqual(outdent`
@@ -500,8 +502,8 @@ describe('Error overlay for hydration errors in App router', () => {
         <div className="parent">
           <Suspense fallback={<p>}>
             ...
-      +      <main className="second">
-      -      <footer className="3">
+             <main className="second">
+             <footer className="3">
     `)
     }
 
@@ -801,7 +803,7 @@ describe('Error overlay for hydration errors in App router', () => {
     await retry(async () => {
       expect(await getRedboxTotalErrorCount(browser)).toBe(
         // One error for "Cannot render a sync or defer <script>"
-        enableOwnerStacks
+        isNewDevOverlay
           ? // With owner stacks, we also get an error for the parent context.
             3
           : 2
@@ -867,23 +869,23 @@ describe('Error overlay for hydration errors in App router', () => {
     if (isTurbopack) {
       // FIXME: Should not fork on Turbopack i.e. match the snapshot in the else-branch
       expect(pseudoHtml).toMatchInlineSnapshot(`
-        "...
-          ...
-        +  client
-        -  server"
+       "...
+         ...
+       client
+       server"
       `)
     } else {
       expect(pseudoHtml).toMatchInlineSnapshot(`
-        "...
-          <div>
-            <div>
-              <div>
-                <div>
-                  <Mismatch>
-                    <p>
-                      <span>
-        +                client
-        -                server"
+       "...
+         <div>
+           <div>
+             <div>
+               <div>
+                 <Mismatch>
+                   <p>
+                     <span>
+                     client
+                     server"
       `)
     }
 
@@ -907,8 +909,8 @@ describe('Error overlay for hydration errors in App router', () => {
                                <p>
                                  <span>
                                    ...
-       +                            client
-       -                            server"
+                                 client
+                                 server"
       `)
     } else {
       expect(fullPseudoHtml).toMatchInlineSnapshot(`
@@ -927,8 +929,8 @@ describe('Error overlay for hydration errors in App router', () => {
                                <p>
                                  <span>
                                    ...
-       +                            client
-       -                            server"
+                                 client
+                                 server"
       `)
     }
   })

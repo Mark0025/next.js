@@ -36,7 +36,7 @@ export { shouldRunTurboDevTest }
 export const nextServer = server
 export const pkg = _pkg
 
-// TODO(jiwon): Remove this once we have a new dev overlay at stable.
+// TODO(new-dev-overlay): Remove this once old dev overlay fork is removed
 const isNewDevOverlay =
   process.env.__NEXT_EXPERIMENTAL_NEW_DEV_OVERLAY === 'true'
 
@@ -1020,7 +1020,7 @@ export function getRedboxNavText(browser: BrowserInterface): Promise<string> {
 }
 
 export async function getRedboxTotalErrorCount(browser: BrowserInterface) {
-  // TODO(jiwon): Remove this once we have a new dev overlay at stable.
+  // TODO(new-dev-overlay): Remove this once old dev overlay fork is removed
   if (isNewDevOverlay) {
     // N/M\nNext.js X.Y.Z -> M
     const text = (await getRedboxNavText(browser)) || ''

@@ -8,7 +8,8 @@ import {
 } from 'next-test-utils'
 
 const isReactExperimental = process.env.__NEXT_EXPERIMENTAL_PPR === 'true'
-const isNewDevOverlay = isReactExperimental
+const isNewDevOverlay =
+  process.env.__NEXT_EXPERIMENTAL_NEW_DEV_OVERLAY === 'true'
 const isReact18 = parseInt(process.env.NEXT_TEST_REACT_VERSION) === 18
 
 describe('react-dom/server in React Server environment', () => {
@@ -394,7 +395,7 @@ describe('react-dom/server in React Server environment', () => {
         }
       `)
     } else {
-      // TODO(jiwon): Remove this once we have a new dev overlay at stable.
+      // TODO(new-dev-overlay): Remove this once old dev overlay fork is removed
       if (isNewDevOverlay) {
         expect(redbox).toMatchInlineSnapshot(`
          {
