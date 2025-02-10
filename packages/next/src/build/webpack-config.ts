@@ -1310,7 +1310,21 @@ export default async function getBaseWebpackConfig(
                 },
               },
             ]
-          : []),
+          : [
+              {
+                // Pages dir will have separate compilations for each of these conditions.
+                // However, we need source URLs that are unique across compilations
+                // for our sourcemapping middleware to work correctly.
+                // Otherwise asking Node.js to find a source map for a given URL
+                // is ambigious.
+                layer: isEdgeServer
+                  ? WEBPACK_LAYERS.pagesEdge
+                  : isClient
+                    ? WEBPACK_LAYERS.pagesBrowser
+                    : WEBPACK_LAYERS.pagesNode,
+                type: 'javascript/auto',
+              },
+            ]),
         ...(hasAppDir && !isClient
           ? [
               {
